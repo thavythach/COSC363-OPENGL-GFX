@@ -14,7 +14,7 @@ using namespace std;
 //--Globals ---------------------------------------------------------------
 int cam_hgt = 4; //Camera height
 float angle = 10.0;  //Rotation angle for viewing
-float theta = 20;
+int theta = 0;
 
 //--Draws a grid of lines on the floor plane -------------------------------
 void drawFloor()
@@ -31,12 +31,11 @@ void drawFloor()
 	}
 }
 
-void doContinuousWalkCycle(float value){
-	theta ++;
+void myTimer(int value){
+	theta ++ ;
 	glutPostRedisplay();
-	//glutTimerFunc(50, doContinuousWalkCycle, 0);
+	glutTimerFunc(50, myTimer, 0);
 }
-
 //--Draws a character model constructed using GLUT objects ------------------
 void drawModel()
 {
@@ -157,6 +156,7 @@ int main(int argc, char** argv)
 
    glutDisplayFunc(display);
    glutSpecialFunc(special); 
+   glutTimerFunc(50, myTimer, 0);
    glutMainLoop();
    return 0;
 }

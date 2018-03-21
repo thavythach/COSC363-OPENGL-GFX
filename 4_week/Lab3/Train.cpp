@@ -260,7 +260,8 @@ void initialize(void)
 //-------------------------------------------------------------------
 void display(void)
 {
-   //float lgt_pos[] = {0.0f, 50.0f, 0.0f, 1.0f};  //light0 position (directly above the origin)
+   
+   float lgt_pos[] = {0.0f, 50.0f, 0.0f, 1.0f};  //light0 position (directly above the origin)
    GLfloat sp_lgt_pos[] = {-10.0f, 14.0f, 0.0f, 1.0f};
  
    glClear (GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -268,7 +269,7 @@ void display(void)
    glLoadIdentity();
 
    gluLookAt (-180, 150, 20, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-   //glLightfv(GL_LIGHT0, GL_POSITION, lgt_pos);   //light position
+   glLightfv(GL_LIGHT0, GL_POSITION, lgt_pos);   //light position
     
 
 	glPushMatrix();
@@ -279,10 +280,13 @@ void display(void)
 		tracks();
 	glPopMatrix();
 	
+	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 30.0);
+	glLightf(GL_LIGHT1, GL_SPOT_EXPONENT,0.01);
 	glPushMatrix();
 		glTranslatef(x, 1, z);
 		glRotatef(theta, 0, 1, 0);
 		engine();
+		glLightfv(GL_LIGHT1, GL_POSITION, sp_lgt_pos); // sp light position
 	glPopMatrix();
 	
 	glPushMatrix();
@@ -291,12 +295,9 @@ void display(void)
 		wagon();
 	glPopMatrix();
 	
-	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 30.0);
-	glLightf(GL_LIGHT1, GL_SPOT_EXPONENT,0.01);
 	glPushMatrix();
 		glTranslatef(x+40, 1, z);
 		glRotatef(theta, 0, 1, 0);
-		    glLightfv(GL_LIGHT1, GL_POSITION, sp_lgt_pos); // sp light position
 		wagon();
 	glPopMatrix();
 	

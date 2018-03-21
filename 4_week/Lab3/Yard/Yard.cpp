@@ -57,9 +57,9 @@ void special(int key, int x, int y)
 //--------------------------------------------------------------------------------
 
 void initialise()
-{ 
-//	loadTexture();	
-//	glEnable(GL_TEXTURE_2D);
+{ 	
+	loadTexture();	
+	glEnable(GL_TEXTURE_2D);
 	glClearColor(0., 1., 1., 1.);    //Background colour 		
 }
 
@@ -67,38 +67,45 @@ void initialise()
 
 void walls()
 {
-	glColor3f(0.8, 0.7, 0.3);   //replace with a texture
+	//glColor3f(0.8, 0.7, 0.3);   //replace with a texture
+	
 
  	glBegin(GL_QUADS);
 
 	////////////////////// BACK WALL ///////////////////////
 
-	glVertex3f(-15, 1, -15);
-	glVertex3f(-15, -1, -15);
-	glVertex3f(15, -1, -15);
-	glVertex3f(15, 1, -15);
+	glTexCoord2f(0.0,  2.0); glVertex3f(-15, 1, -15);  
+	glTexCoord2f(0.0,  0.0); glVertex3f(-15, -1, -15);  
+	glTexCoord2f(12.0, 0.0); glVertex3f(15, -1, -15);  
+	glTexCoord2f(12.0, 2.0); glVertex3f(15, 1, -15); 
 
 	////////////////////// FRONT WALL ///////////////////////
 
-     glVertex3f(-15, 1, 15);
- 	 glVertex3f(-15, -1, 15);
- 	 glVertex3f(15, -1, 15);
-     glVertex3f(15, 1, 15);
+     glTexCoord2f(12.0,  2.0); glVertex3f(-15, 1, 15);
+ 	 glTexCoord2f(12.0,  0.0); glVertex3f(-15, -1, 15);
+ 	 glTexCoord2f(0.0,  0.0); glVertex3f(15, -1, 15);
+     glTexCoord2f(0.0,  2.0); glVertex3f(15, 1, 15);
 
 	////////////////////// LEFT WALL ///////////////////////
 
-	 glVertex3f(-15, 1, -15);
-  	 glVertex3f(-15, -1, -15);
-	 glVertex3f(-15, -1, 15);
- 	 glVertex3f(-15, 1, 15);
-
-
+	/* really cool texture
+	 glTexCoord2f(0.0,  0.0); glVertex3f(-15, 1, -15);
+  	 glTexCoord2f(12.0,  0.0); glVertex3f(-15, -1, -15);
+	 glTexCoord2f(12.0,  2.0); glVertex3f(-15, -1, 15);
+ 	 glTexCoord2f(0.0,  2.0); glVertex3f(-15, 1, 15);
+	*/
+	
+	glTexCoord2f(12.0,  0.0); glVertex3f(-15, 1, -15);
+	glTexCoord2f(12.0,  2.0); glVertex3f(-15, -1, -15);
+	glTexCoord2f(0.0,  2.0); glVertex3f(-15, -1, 15);
+	glTexCoord2f(0.0,  0.0); glVertex3f(-15, 1, 15);
+	
 	////////////////////// RIGHT WALL ///////////////////////
 
-	 glVertex3f(15, 1, -15);
-	 glVertex3f(15, -1, -15);
- 	 glVertex3f(15, -1, 15);
- 	 glVertex3f(15, 1, 15);
+	 glTexCoord2f(0.0,  0.0); glVertex3f(15, 1, -15);
+	 glTexCoord2f(0.0,  2.0); glVertex3f(15, -1, -15);
+ 	 glTexCoord2f(12.0,  2.0); glVertex3f(15, -1, 15);
+ 	 glTexCoord2f(12.0,  0.0); glVertex3f(15, 1, 15);
 
 	glEnd();
 }
@@ -106,13 +113,13 @@ void walls()
 
 void floor()
 {
-    glColor3d(0.6, 0.25, 0.25);  //replace with a texture
+    // glColor3d(0.6, 0.25, 0.25);  //replace with a texture
 
 	glBegin(GL_QUADS);
-		 glVertex3f(-15, -1, -15);
-		 glVertex3f(-15, -1, 15);
-		 glVertex3f(15, -1, 15);
-		 glVertex3f(15, -1, -15);
+		 glTexCoord2f(0.0,  0.0); glVertex3f(-15, -1, -15);
+		 glTexCoord2f(0.0,  16.0); glVertex3f(-15, -1, 15);
+		 glTexCoord2f(0.0,  0.0); glVertex3f(15, -1, 15);
+		 glTexCoord2f(16.0,  0.0); glVertex3f(15, -1, -15);
 	glEnd();
 }
 

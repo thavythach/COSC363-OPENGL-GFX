@@ -125,6 +125,17 @@ void floor()
 
 //--------------------------------------------------------------------------------
 
+float detectCollision(float boundary, float val)
+{
+	if ( val >= boundary-1 ) return ((int)boundary)-1;
+	
+	if ( val <= -boundary+1 ) return ((int)-boundary)+1;
+	
+	return val;
+}
+
+//--------------------------------------------------------------------------------
+
 void display() 
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
@@ -134,6 +145,8 @@ void display()
 
 	glMatrixMode(GL_MODELVIEW);								
 	glLoadIdentity();
+	eye_x = detectCollision(15.0f, eye_x); // assumptions are symmetrical
+	eye_z = detectCollision(15.0f, eye_z); // assumptions are symmetrical
 	gluLookAt(eye_x, 0, eye_z,  look_x, 0, look_z,   0, 1, 0);	
 	
 	walls();

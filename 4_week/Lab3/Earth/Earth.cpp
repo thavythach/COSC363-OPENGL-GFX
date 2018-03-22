@@ -13,12 +13,14 @@ using namespace std;
 GLuint txId[2];
 GLUquadricObj*	q;
 float angle = 0;
+float earth_x = 15.0f;
 
 //--------------------------------------------------------------------------------
 void loadTexture()	 
 {
 	glGenTextures(2, txId);   //Get 2 texture IDs 
 	glBindTexture(GL_TEXTURE_2D, txId[0]);  //Use this texture name for the following OpenGL texture
+	//loadBMP("brycebanana.bmp");
 	loadBMP("Earth.bmp");
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	// Linear Filtering
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -74,9 +76,9 @@ void display()
 	
 	//Earth
 	glBindTexture(GL_TEXTURE_2D, txId[0]);
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);	
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);	
 	glPushMatrix();
-	    glTranslatef(20.0, 0.0, 0.0);	 //Translate Earth along x-axis by 20 units	
+	    glTranslatef(earth_x, 0.0, 0.0);	 //Translate Earth along x-axis by 20 units	
 	    glRotatef(angle, 0, 1, 0);       //Rotation about polar axis of the Earth
 	    glRotatef(-90., 1.0, 0., 0.0);   //make the sphere axis vertical
 	    gluSphere ( q, 3.0, 36, 17 );
@@ -84,7 +86,7 @@ void display()
     
 	//Sun
 	glBindTexture(GL_TEXTURE_2D, txId[1]);
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);	
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);	
 	glPushMatrix();		
 	    glRotatef(-90., 1.0, 0., 0.0);   //make the sphere axis vertical
 	    gluSphere ( q, 4.0, 36, 17 );
@@ -94,10 +96,18 @@ void display()
 	glutSwapBuffers();
 }
 
+int earth_tick = 0;
+
 //----------------------------------------------------------------
 void timer(int value)
 {
 	angle ++;
+	if (earth_x >= 15) earth_tick = 0; 
+	if (earth_x <= -15) earth_tick = 1;
+	
+	if (earth_tick == 0) earth_x -= 0.2;
+	else earth_x += 0.2;
+	
 	if(angle > 360) angle = 0;
 	glutTimerFunc(50, timer, value);
 	glutPostRedisplay();

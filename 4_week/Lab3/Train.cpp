@@ -280,8 +280,8 @@ void display(void)
 		tracks();
 	glPopMatrix();
 	
-	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 30.0);
-	glLightf(GL_LIGHT1, GL_SPOT_EXPONENT,0.01);
+	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 30.0); // higher the val, higher the omni-directional life it is.
+	glLightf(GL_LIGHT1, GL_SPOT_EXPONENT,20.00);
 	glPushMatrix();
 		glTranslatef(x, 1, z);
 		glRotatef(theta, 0, 1, 0);

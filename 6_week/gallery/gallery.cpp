@@ -14,6 +14,10 @@ using namespace std;
 
 #define GL_CLAMP_TO_EDGE 0x812F   //To get rid of seams between textures
 float lookAngle = 0.0;		//Camera rotation
+float xeye =0.0, zeye=0.0;
+float cdr=3.14159265/180.0;	//Conversion from degrees to radians
+float xlook = -100.0*sin(lookAngle*cdr);
+float zlook = -100.0*cos(lookAngle*cdr);
 
 GLuint texId[6];
 
@@ -127,15 +131,13 @@ void initialise(void)
 //---------------------------------------------------------------------
 void display(void)
 {
-	float xlook, zlook;
-	float cdr=3.14159265/180.0;	//Conversion from degrees to radians
+	
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	xlook = -100.0*sin(lookAngle*cdr);
-	zlook = -100.0*cos(lookAngle*cdr);
-	gluLookAt (0, 500, 0, xlook, 500, zlook, 0, 1, 0);  //camera rotation
+	
+	gluLookAt (xeye, 500, zeye, xlook, 500, zlook, 0, 1, 0);  //camera rotation
 
 	skybox();
 
@@ -145,9 +147,21 @@ void display(void)
 //--------------------------------------------------------------
  void special(int key, int x, int y)
  {
-    if(key==GLUT_KEY_LEFT) lookAngle+=5;		 //Turn left
-    else if(key==GLUT_KEY_RIGHT) lookAngle-=5;   //Turn right
-
+    if(key==GLUT_KEY_RIGHT) lookAngle+=5;		 //Turn left
+    else if(key==GLUT_KEY_LEFT) lookAngle-=5;   //Turn right
+    else if(key == GLUT_KEY_DOWN)
+	{  //Move backward
+		xeye -= 10*sin(lookAngle*cdr);
+		zeye += 10*cos(lookAngle*cdr);
+	}
+	else if(key == GLUT_KEY_UP)
+	{ //Move forward
+		xeye += 10*sin(lookAngle*cdr);
+		zeye -= 10*cos(lookAngle*cdr);
+	}
+    
+	xlook = xeye + 100*sin(lookAngle*cdr);
+	zlook = zeye - 100*cos(lookAngle*cdr);
 	glutPostRedisplay();
 }
 //-------------------------------------------------------------------

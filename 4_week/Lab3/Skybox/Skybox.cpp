@@ -9,7 +9,6 @@
 #include <GL/freeglut.h>
 #include <cmath>
 #include "loadTGA.h"
-using namespace std;
 
 #define GL_CLAMP_TO_EDGE 0x812F   //To get rid of seams between textures
 float lookAngle = 0.0;		//Camera rotation

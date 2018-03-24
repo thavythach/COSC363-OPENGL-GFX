@@ -8,7 +8,6 @@
 #include <cmath>
 #include <GL/freeglut.h>
 #include "loadBMP.h"
-using namespace std;
 
 GLuint txId;			//Texture id
 float viewAngle = 0.0;	//Camera view angle
@@ -71,6 +70,7 @@ void display(void)
     float vy[N] = {0};
     float vz[N] = {19.4, 8., 5., 0., -4., -8., -11., -12., -12.4, -12.5, -12.4, -12., -11., -8., -4., 0., 5., 8.};
     float wx[N], wy[N], wz[N];
+    float V[N], W[N];
     
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
@@ -84,12 +84,56 @@ void display(void)
 	
     glColor3f(0., 1., 1.);
     
+    float theta = -10 * CDR;
+    // 3D Model Algorithm
+	glNormal3f(0.0, 1.0, 0.0);
+    glBegin(GL_QUAD_STRIP);
+		for (int i=0; i<N; i++){
+			wx[i] = (vx[i]*cos(theta)) + (vz[i]*sin(theta));
+			wy[i] = vy[i] + 20;
+			wz[i] = (-vx[i]*sin(theta)) + (vz[i]*cos(theta));
+			//V[i] = (vx[i], vy[i], vz[i]);
+			//W[i] = (wx[i], wy[i], wz[i]);
+			
+			glVertex3f(vx[i], vy[i], vz[i]);
+			glVertex3f(wx[i], wy[i], wz[i]);
+			
+			vx[i] = wx[i];
+			vy[i] = wy[i];
+			vz[i] = wz[i];
+		}
+	glEnd();
+	
+	
+	theta = 180 * CDR;
+	glNormal3f(0.0, 1.0, 0.0);
+	 glBegin(GL_QUAD_STRIP);
+		for (int i=0; i<N; i++){
+			wx[i] = (vx[i]*cos(theta)) + (vz[i]*sin(theta));
+			wy[i] = vy[i] ;
+			wz[i] = (-vx[i]*sin(theta)) + (vz[i]*cos(theta));
+			//V[i] = (vx[i], vy[i], vz[i]);
+			//W[i] = (wx[i], wy[i], wz[i]);
+			
+			glVertex3f(vx[i], vy[i], vz[i]);
+			glVertex3f(wx[i], wy[i], wz[i]);
+			
+			vx[i] = wx[i];
+			vy[i] = wy[i];
+			vz[i] = wz[i];
+		}
+	glEnd();
+	
+    
+    
 // ==== Remove the following 5 lines of code and replace with a 3D model! ====
+	/*
 	glNormal3f(0.0, 1.0, 0.0);
 	glBegin(GL_LINE_LOOP);
 		for(int i = 0; i < N; i++)
 		     glVertex3f(vx[i], vy[i], vz[i]);
 	glEnd();
+	*/
 // =================================================================
 
 	glFlush(); 

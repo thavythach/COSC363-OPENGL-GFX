@@ -56,34 +56,45 @@ void loadGLTextures()				// Load bitmaps And Convert To Textures
 
 void halfPyramid(){
 	
+	/* //backlog
+	glBegin(GL_TRIANGLES);
+		glColor4f(0.5, 0.5, 0.5, 1.0); 
+		glVertex3f( 0.0f, 1000.0f, 0.0f);
+		glColor4f(1.0, 0.0, 0.0, 1.0); 
+		glVertex3f(-1000.0f, -1000.0f, 1000.0f);
+		glColor4f(0.5, 0.5, 0.5, 1.0); 
+		glVertex3f(1000.0f, -1000.0f, 1000.0f);
+	glEnd();
+	* */
+	
 	glBegin(GL_TRIANGLES);
 		// Right
-		glColor3f(1.0f, 0.0f, 0.0f);     // Red
+		glColor3f(178.0f,0.0f,0.0f);     // Red
 		glVertex3f(0.0f, 1000.0f, 0.0f);
-		glColor3f(0.0f, 0.0f, 1.0f);     // Blue
+		glColor3f(0.1f,0.1f,0.1f);     // Red
 		glVertex3f(1000.0f, -1000.0f, 1000.0f);
-		glColor3f(0.0f, 1.0f, 0.0f);     // Green
+		glColor3f(178.0f,0.0f,0.0f);     // Red
 		glVertex3f(1000.0f, -1000.0f, -1000.0f);
 	glEnd();  
 	
 	glBegin(GL_TRIANGLES);
 
 		// Back
-		glColor3f(1.0f, 0.0f, 0.0f);     // Red
+		glColor3f(178.0f,0.0f,0.0f);     // Red
 		glVertex3f(0.0f, 1000.0f, 0.0f);
-		glColor3f(0.0f, 1.0f, 0.0f);     // Green
+		glColor3f(0.1f,0.1f,0.1f);     // Red
 		glVertex3f(1000.0f, -1000.0f, -1000.0f);
-		glColor3f(0.0f, 0.0f, 1.0f);     // Blue
+		glColor3f(178.0f,0.0f,0.0f);     // Red
 		glVertex3f(-1000.0f, -1000.0f, -1000.0f);
 	glEnd();  
 
 	glBegin(GL_TRIANGLES);
 		// Left
-		glColor3f(1.0f,0.0f,0.0f);       // Red
+		glColor3f(178.0f,0.0f,0.0f);     // Red
 		glVertex3f( 0.0f, 1000.0f, 0.0f);
-		glColor3f(0.0f,0.0f,1.0f);       // Blue
+		glColor3f(0.1f,0.1f,0.1f);     // Red
 		glVertex3f(-1000.0f,-1000.0f,-1000.0f);
-		glColor3f(0.0f,1.0f,0.0f);       // Green
+		glColor3f(178.0f,0.0f,0.0f);     // Red
 		glVertex3f(-1000.0f,-1000.0f, 1000.0f);
 	glEnd();
 }
@@ -93,9 +104,45 @@ void building(){
 	glTranslatef(-1000, 250,-2000);
 	glScalef(0.6f,0.9f,0.4f);
 	
+	glColor4f(0.3, 0.5, 0.5, 1.0); // bottom house color
+	
+	/* backlog
+	glPushMatrix();
+		glTranslatef(1000,-250,0);
+		glRotatef(90.0f, 0, 1, 0);
+		glScalef(10.0f, 0.1f, 3.5f);		
+		glutSolidCube(1000.0);
+	glPopMatrix();
+	* */
+	
 	glPushMatrix();
 		glTranslatef(0,1350,0);
 		halfPyramid();
+	glPopMatrix();
+	
+	float otherSide = 9600;
+	
+	glPushMatrix();
+		glTranslatef(0,1350,0);
+		
+		
+		glBegin(GL_TRIANGLES);
+			glColor4f(0.5, 0.5, 0.5, 1.0); 
+			glVertex3f( 0.0f, 1000.0f, otherSide);
+			glColor4f(1.0, 0.0, 0.0, 1.0); 
+			glVertex3f(-1000.0f, -1000.0f, 1000.0f);
+			glColor4f(0.5, 0.5, 0.5, 1.0); 
+			glVertex3f(-500.0f, -1000.0f, -1000.0f+otherSide);
+		glEnd();
+		
+		
+		
+		glBegin(GL_TRIANGLES);
+			glColor4f(0.5, 0.5, 0.5, 1.0); glVertex3f( 0.0f, 1000.0f, 0.0f);
+			glColor4f(1.0, 0.0, 0.0, 1.0); glVertex3f(-1000.0f, -1000.0f, 1000.0f);
+			glColor4f(0.5, 0.5, 0.5, 1.0); glVertex3f(0.0f, 1000.0f, otherSide);
+		glEnd();
+		
 	glPopMatrix();
 	
 	glPushMatrix();
@@ -104,12 +151,82 @@ void building(){
 		halfPyramid();
 	glPopMatrix();
 	
-	glColor4f(0, 0, 0, 1.0);
+	glColor4f(0.3, 0.5, 0.5, 1.0); // bottom house color
+	glColor3f(0.5f, 0.35f, 0.05f);
+	// right house, right
 	glPushMatrix();
 		glTranslatef(0,0,-1000);
 		glScalef(2.0f,0.7f, 0.1f);
 		glutSolidCube(1000.0);
 	glPopMatrix();
+	
+	// left house, left
+	glPushMatrix();
+		glTranslatef(0,0,1000+otherSide);
+		glScalef(2.0f,0.7f, 0.1f);
+		glutSolidCube(1000.0);
+	glPopMatrix();
+	
+	// right house, back
+	glPushMatrix();
+		glTranslatef(-1000,0,0);
+		glRotatef(90.0f,0,1,0);
+		glScalef(2.0f,0.7f, 0.1f);
+		glutSolidCube(1000.0);
+	glPopMatrix();
+	
+	// left house, back
+	glPushMatrix();
+		glTranslatef(-1000,0,otherSide);
+		glRotatef(90.0f,0,1,0);
+		glScalef(2.0f,0.7f, 0.1f);
+		glutSolidCube(1000.0);
+	glPopMatrix();
+	
+	// right house, front
+	glPushMatrix();
+		glTranslatef(1000,0,0);
+		glRotatef(90.0f,0,1,0);
+		glScalef(2.0f,0.7f, 0.1f);
+		glutSolidCube(1000.0);
+	glPopMatrix();
+	
+	
+	// left house, front
+	glPushMatrix();
+		glTranslatef(1000,0,otherSide);
+		glRotatef(90.0f,0,1,0);
+		glScalef(2.0f,0.7f, 0.1f);
+		glutSolidCube(1000.0);
+	glPopMatrix();
+	
+	glColor3f(0.45f, 0.35f, 0.05f); // new color change
+	
+	// right house, front
+	glPushMatrix();
+		glTranslatef(1100,0,1500);
+		glRotatef(90.0f,0,1,0);
+		glScalef(5.0f,0.6f, 0.1f);
+		glutSolidCube(1000.0);
+	glPopMatrix();
+	
+	// left house, front
+	glPushMatrix();
+		glTranslatef(1100,0,-1500+otherSide);
+		glRotatef(90.0f,0,1,0);
+		glScalef(5.0f,0.6f, 0.1f);
+		glutSolidCube(1000.0);
+	glPopMatrix();
+	
+	// both houses, back
+	glPushMatrix();
+		glTranslatef(-1100,500,4800);
+		glRotatef(90.0f,0,1,0);
+		glScalef(14.0f,1.4f, 0.1f);
+		glutSolidCube(1000.0);
+	glPopMatrix();
+	
+	
 	
 	
 }

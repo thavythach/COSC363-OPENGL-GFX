@@ -18,6 +18,8 @@ float xeye =0.0, zeye=0.0;
 float cdr=3.14159265/180.0;	//Conversion from degrees to radians
 float xlook = -100.0*sin(lookAngle*cdr);
 float zlook = -100.0*cos(lookAngle*cdr);
+float skyboxLen = 2400.0f;
+
 
 GLuint texId[6];
 
@@ -52,65 +54,124 @@ void loadGLTextures()				// Load bitmaps And Convert To Textures
 
 //========================================================================================
 
+void halfPyramid(){
+	
+	glBegin(GL_TRIANGLES);
+		// Right
+		glColor3f(1.0f, 0.0f, 0.0f);     // Red
+		glVertex3f(0.0f, 1000.0f, 0.0f);
+		glColor3f(0.0f, 0.0f, 1.0f);     // Blue
+		glVertex3f(1000.0f, -1000.0f, 1000.0f);
+		glColor3f(0.0f, 1.0f, 0.0f);     // Green
+		glVertex3f(1000.0f, -1000.0f, -1000.0f);
+	glEnd();  
+	
+	glBegin(GL_TRIANGLES);
+
+		// Back
+		glColor3f(1.0f, 0.0f, 0.0f);     // Red
+		glVertex3f(0.0f, 1000.0f, 0.0f);
+		glColor3f(0.0f, 1.0f, 0.0f);     // Green
+		glVertex3f(1000.0f, -1000.0f, -1000.0f);
+		glColor3f(0.0f, 0.0f, 1.0f);     // Blue
+		glVertex3f(-1000.0f, -1000.0f, -1000.0f);
+	glEnd();  
+
+	glBegin(GL_TRIANGLES);
+		// Left
+		glColor3f(1.0f,0.0f,0.0f);       // Red
+		glVertex3f( 0.0f, 1000.0f, 0.0f);
+		glColor3f(0.0f,0.0f,1.0f);       // Blue
+		glVertex3f(-1000.0f,-1000.0f,-1000.0f);
+		glColor3f(0.0f,1.0f,0.0f);       // Green
+		glVertex3f(-1000.0f,-1000.0f, 1000.0f);
+	glEnd();
+}
+
+void building(){
+	
+	glTranslatef(-1000, 250,-2000);
+	glScalef(0.6f,0.9f,0.4f);
+	
+	glPushMatrix();
+		glTranslatef(0,1350,0);
+		halfPyramid();
+	glPopMatrix();
+	
+	glPushMatrix();
+		glTranslatef(0, 1350,9600);
+		glRotatef(180.0f,0,1,0);
+		halfPyramid();
+	glPopMatrix();
+	
+	glColor4f(0, 0, 0, 1.0);
+	glPushMatrix();
+		glTranslatef(0,0,-1000);
+		glScalef(2.0f,0.7f, 0.1f);
+		glutSolidCube(1000.0);
+	glPopMatrix();
+	
+	
+}
+
 void skybox(){
 	glEnable(GL_TEXTURE_2D);
+	
+	////////////////////// LEFT WALL ///////////////////////
+	glBindTexture(GL_TEXTURE_2D, texId[0]);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0, 0.0); glVertex3f(-skyboxLen,  0, skyboxLen);
+	glTexCoord2f(1.0, 0.0); glVertex3f(-skyboxLen, 0., -skyboxLen);
+	glTexCoord2f(1.0, 1.0); glVertex3f(-skyboxLen, skyboxLen, -skyboxLen);
+	glTexCoord2f(0.0, 1.0); glVertex3f(-skyboxLen, skyboxLen, skyboxLen);
+	glEnd();
 
-  ////////////////////// LEFT WALL ///////////////////////
-  glBindTexture(GL_TEXTURE_2D, texId[0]);
-  glBegin(GL_QUADS);
-  glTexCoord2f(0.0, 0.0); glVertex3f(-1000,  0, 1000);
-  glTexCoord2f(1.0, 0.0); glVertex3f(-1000, 0., -1000);
-  glTexCoord2f(1.0, 1.0); glVertex3f(-1000, 1000., -1000);
-  glTexCoord2f(0.0, 1.0); glVertex3f(-1000, 1000, 1000);
-  glEnd();
+	////////////////////// FRONT WALL ///////////////////////
+	glBindTexture(GL_TEXTURE_2D, texId[1]);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0, 0.0); glVertex3f(-skyboxLen,  0, -skyboxLen);
+	glTexCoord2f(1.0, 0.0); glVertex3f(skyboxLen, 0., -skyboxLen);
+	glTexCoord2f(1.0, 1.0); glVertex3f(skyboxLen, skyboxLen, -skyboxLen);
+	glTexCoord2f(0.0, 1.0); glVertex3f(-skyboxLen,  skyboxLen, -skyboxLen);
+	glEnd();
 
-  ////////////////////// FRONT WALL ///////////////////////
-  glBindTexture(GL_TEXTURE_2D, texId[1]);
-  glBegin(GL_QUADS);
-  glTexCoord2f(0.0, 0.0); glVertex3f(-1000,  0, -1000);
-  glTexCoord2f(1.0, 0.0); glVertex3f(1000, 0., -1000);
-  glTexCoord2f(1.0, 1.0); glVertex3f(1000, 1000, -1000);
-  glTexCoord2f(0.0, 1.0); glVertex3f(-1000,  1000, -1000);
-  glEnd();
-
- ////////////////////// RIGHT WALL ///////////////////////
-  glBindTexture(GL_TEXTURE_2D, texId[2]);
-  glBegin(GL_QUADS);
-  glTexCoord2f(0.0, 0.0); glVertex3f(1000,  0, -1000);
-  glTexCoord2f(1.0, 0.0); glVertex3f(1000, 0, 1000);
-  glTexCoord2f(1.0, 1.0); glVertex3f(1000, 1000,  1000);
-  glTexCoord2f(0.0, 1.0); glVertex3f(1000,  1000,  -1000);
-  glEnd();
+	////////////////////// RIGHT WALL ///////////////////////
+	glBindTexture(GL_TEXTURE_2D, texId[2]);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0, 0.0); glVertex3f(skyboxLen,  0, -skyboxLen);
+	glTexCoord2f(1.0, 0.0); glVertex3f(skyboxLen, 0, skyboxLen);
+	glTexCoord2f(1.0, 1.0); glVertex3f(skyboxLen, skyboxLen,  skyboxLen);
+	glTexCoord2f(0.0, 1.0); glVertex3f(skyboxLen,  skyboxLen,  -skyboxLen);
+	glEnd();
 
 
-  ////////////////////// REAR WALL ////////////////////////
-  glBindTexture(GL_TEXTURE_2D, texId[3]);
-  glBegin(GL_QUADS);
-  glTexCoord2f(0.0, 0.0); glVertex3f( 1000, 0, 1000);
-  glTexCoord2f(1.0, 0.0); glVertex3f(-1000, 0,  1000);
-  glTexCoord2f(1.0, 1.0); glVertex3f(-1000, 1000,  1000);
-  glTexCoord2f(0.0, 1.0); glVertex3f( 1000, 1000, 1000);
-  glEnd();
-  
-  
-  /////////////////////// TOP //////////////////////////
-  glBindTexture(GL_TEXTURE_2D, texId[4]);
-  glBegin(GL_QUADS);
-  glTexCoord2f(0.0,  1.0); glVertex3f(-1000, 1000, -1000);
-  glTexCoord2f(0.0,  0.0); glVertex3f(1000, 1000,  -1000);
-  glTexCoord2f(1.0,  0.0); glVertex3f(1000, 1000,  1000);
-  glTexCoord2f(1.0,  1.0); glVertex3f(-1000, 1000, 1000);
-  glEnd();
-  
-  /////////////////////// FLOOR //////////////////////////
-  glBindTexture(GL_TEXTURE_2D, texId[5]);
-  glBegin(GL_QUADS);
-  glTexCoord2f(1.0,  0.0); glVertex3f(-1000, 0., 1000);
-  glTexCoord2f(1.0,  1.0); glVertex3f(1000, 0.,  1000);
-  glTexCoord2f(0.0,  1.0); glVertex3f(1000, 0., -1000);
-  glTexCoord2f(0.0,  0.0); glVertex3f(-1000, 0., -1000);
-  glEnd();
-  
+	////////////////////// REAR WALL ////////////////////////
+	glBindTexture(GL_TEXTURE_2D, texId[3]);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0, 0.0); glVertex3f( skyboxLen, 0, skyboxLen);
+	glTexCoord2f(1.0, 0.0); glVertex3f(-skyboxLen, 0,  skyboxLen);
+	glTexCoord2f(1.0, 1.0); glVertex3f(-skyboxLen, skyboxLen,  skyboxLen);
+	glTexCoord2f(0.0, 1.0); glVertex3f( skyboxLen, skyboxLen, skyboxLen);
+	glEnd();
+
+
+	/////////////////////// TOP //////////////////////////
+	glBindTexture(GL_TEXTURE_2D, texId[4]);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0,  1.0); glVertex3f(-skyboxLen, skyboxLen, -skyboxLen);
+	glTexCoord2f(0.0,  0.0); glVertex3f(skyboxLen, skyboxLen,  -skyboxLen);
+	glTexCoord2f(1.0,  0.0); glVertex3f(skyboxLen, skyboxLen,  skyboxLen);
+	glTexCoord2f(1.0,  1.0); glVertex3f(-skyboxLen, skyboxLen, skyboxLen);
+	glEnd();
+
+	/////////////////////// FLOOR //////////////////////////
+	glBindTexture(GL_TEXTURE_2D, texId[5]);
+	glBegin(GL_QUADS);
+	glTexCoord2f(1.0,  0.0); glVertex3f(-skyboxLen, 0., skyboxLen);
+	glTexCoord2f(1.0,  1.0); glVertex3f(skyboxLen, 0.,  skyboxLen);
+	glTexCoord2f(0.0,  1.0); glVertex3f(skyboxLen, 0., -skyboxLen);
+	glTexCoord2f(0.0,  0.0); glVertex3f(-skyboxLen, 0., -skyboxLen);
+	glEnd();
 }
 
 //---------------------------------------------------------------------
@@ -137,9 +198,19 @@ void display(void)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	
-	gluLookAt (xeye, 500, zeye, xlook, 500, zlook, 0, 1, 0);  //camera rotation
+	gluLookAt (xeye, 100, zeye, xlook, 100, zlook, 0, 1, 0);  //camera rotation
 
-	skybox();
+	glPushMatrix();
+		skybox();
+	glPopMatrix();
+	
+	
+	glDisable(GL_TEXTURE_2D);
+
+	glPushMatrix();
+		glScalef(0.2,0.2,0.2);
+		building();
+	glPopMatrix();
 
 	glFlush();
 }
@@ -147,17 +218,17 @@ void display(void)
 //--------------------------------------------------------------
  void special(int key, int x, int y)
  {
-    if(key==GLUT_KEY_RIGHT) lookAngle+=5;		 //Turn left
+    if(key==GLUT_KEY_RIGHT ) lookAngle+=5;		 //Turn left
     else if(key==GLUT_KEY_LEFT) lookAngle-=5;   //Turn right
     else if(key == GLUT_KEY_DOWN)
 	{  //Move backward
-		xeye -= 10*sin(lookAngle*cdr);
-		zeye += 10*cos(lookAngle*cdr);
+		xeye -= 50*sin(lookAngle*cdr);
+		zeye += 50*cos(lookAngle*cdr);
 	}
 	else if(key == GLUT_KEY_UP)
 	{ //Move forward
-		xeye += 10*sin(lookAngle*cdr);
-		zeye -= 10*cos(lookAngle*cdr);
+		xeye += 50*sin(lookAngle*cdr);
+		zeye -= 50*cos(lookAngle*cdr);
 	}
     
 	xlook = xeye + 100*sin(lookAngle*cdr);
@@ -173,7 +244,7 @@ int main(int argc, char** argv)
    glutInitWindowSize (700, 700); 
    glutInitWindowPosition (50, 50);
 
-   glutCreateWindow ("Sky Box");
+   glutCreateWindow ("3D Model Gallery Made By Thavy Thach");
    initialise();
    glutDisplayFunc(display); 
    glutSpecialFunc(special);

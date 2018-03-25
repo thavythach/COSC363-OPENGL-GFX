@@ -23,6 +23,11 @@ float skyboxLen = 1600.0f;
 float rSnowman = 1.0f, gSnowman = 1.0f, bSnowman = 1.0f;
 int sTick = 0;
 
+int shTick = 0;
+float theta = 0;
+float shWalk = -390;
+float shHead = 3;
+
 GLuint texId[6];
 
 void animationTimer(int value){
@@ -38,6 +43,18 @@ void animationTimer(int value){
 		rSnowman += 0.01f;
 		gSnowman += 0.01f;
 		bSnowman += 0.01f;
+	}
+	
+	if (shTick == 0){
+		theta ++;
+		shWalk -= 10;
+		shHead = -3;
+		if (theta == 15) shTick = 1;
+	} else {
+		theta --;
+		shWalk += 10;
+		shHead = 3;
+		if (theta == -15) shTick = 0;
 	}
 	
 	glutPostRedisplay();
@@ -348,6 +365,67 @@ void skybox(){
 	glEnd();
 }
 
+void sheep()
+{
+	glScalef(15.0f,15.0f,15.0f);
+	
+	glColor3f(0., 0., 1.);		// sheep head
+	glPushMatrix();
+	  glTranslatef(0, 3.0, shHead);
+	  glutSolidCube(1.4);
+	glPopMatrix();
+
+	glColor3f(1., 1., 1.);			// sheep body
+	glPushMatrix();
+	  glTranslatef(0, 2.2, 0);
+	  glRotatef(90.0,1,0,0);
+	  glScalef(3, 5, 3);
+	  glutSolidCube(1);
+	glPopMatrix();
+
+	glColor3f(0., 0., 1.);			//back Right leg
+	glPushMatrix();
+		glTranslatef(-0.8,4,0);
+		glRotatef(-theta, 1, 0, 0);
+		glTranslatef(0.8,-4,0);
+		glTranslatef(-0.8, 0.5, 1.0);
+		glScalef(1, 1.0, 1);
+		glutSolidCube(1);
+	glPopMatrix();
+
+	glColor3f(0., 0., 1.);			//back Left leg
+	glPushMatrix();
+		glTranslatef(0.8,4,0);
+		glRotatef(theta, 1, 0, 0);
+		glTranslatef(-0.8,-4,0);
+		glTranslatef(0.8, 0.5, 1.0);
+		glScalef(1, 1.0, 1);
+		glutSolidCube(1);
+	glPopMatrix();
+	
+	glColor3f(0., 0., 1.);			//front Right leg
+	glPushMatrix();
+		glTranslatef(-0.8,4,0);
+		glRotatef(-theta, 1, 0, 0);
+		glTranslatef(0.8,-4,0);
+		glTranslatef(-0.8, 0.5, -1.0);
+		glScalef(1, 1.0, 1);
+		glutSolidCube(1);
+	glPopMatrix();
+
+	glColor3f(0., 0., 1.);			//front Left leg
+	glPushMatrix();
+		glTranslatef(0.8,4,0);
+		glRotatef(theta, 1, 0, 0);
+		glTranslatef(-0.8,-4,0);
+		glTranslatef(0.8, 0.5, -1.0);
+		glScalef(1, 1.0, 1);
+		glutSolidCube(1);
+	glPopMatrix();
+	
+	
+}
+
 //---------------------------------------------------------------------
 void initialise(void) 
 {
@@ -372,7 +450,7 @@ void display(void)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	
-	gluLookAt (xeye, 100, zeye, xlook, 100, zlook, 0, 1, 0);  //camera rotation
+	gluLookAt (xeye, 30, zeye, xlook, 30, zlook, 0, 1, 0);  //camera rotation
 
 	glPushMatrix();
 		skybox();
@@ -387,7 +465,14 @@ void display(void)
 	glPopMatrix();
 	
 	glPushMatrix();
+		glTranslatef(-500,0,0);
 		snowman();
+	glPopMatrix();
+	
+	glPushMatrix();
+		glTranslatef(shWalk,0,600);
+		glRotatef(90.0f,0,1,0);
+		sheep();
 	glPopMatrix();
 
 	glFlush();

@@ -20,8 +20,29 @@ float xlook = -100.0*sin(lookAngle*cdr);
 float zlook = -100.0*cos(lookAngle*cdr);
 float skyboxLen = 1600.0f;
 
+float rSnowman = 1.0f, gSnowman = 1.0f, bSnowman = 1.0f;
+int sTick = 0;
 
 GLuint texId[6];
+
+void animationTimer(int value){
+	
+	if (rSnowman <= 0.0f) sTick = 1;
+	else if (rSnowman >= 1.0f)sTick = 0;
+	
+	if (sTick == 0){
+		rSnowman -= 0.01f;
+		gSnowman -= 0.50f;
+		bSnowman -= 0.51f;
+	} else {
+		rSnowman += 0.01f;
+		gSnowman += 0.01f;
+		bSnowman += 0.01f;
+	}
+	
+	glutPostRedisplay();
+	glutTimerFunc(50, animationTimer, 0);
+}
 
 void loadGLTextures()				// Load bitmaps And Convert To Textures
 {
@@ -215,6 +236,56 @@ void building(){
 		glutSolidCube(1000.0);
 	glPopMatrix();
 	
+	
+	
+}
+
+void snowman(){
+	// Animated Object 1: Minimum 5 GLUT objects
+	
+	glColor3f(0,0,0); // black eyes
+	// left eye
+	glPushMatrix();
+		glTranslatef(25,155,10);
+		glutSolidDodecahedron(); 
+	glPopMatrix();
+	
+	// right eye
+	glPushMatrix();
+		glTranslatef(25,155,-10);
+		glutSolidDodecahedron(); 
+	glPopMatrix();
+	
+	glColor3f(1.0f,0.5f,0.0f);// orange nose
+	
+	glPushMatrix();
+		glTranslatef(25,145,0);
+		glutSolidCone(10, 25, 25, 25); 
+	glPopMatrix();
+	
+	glColor3f(rSnowman, gSnowman, bSnowman);
+	
+	// bottom
+	glPushMatrix();
+		glTranslatef(0,50,0);
+		glScalef(30.0f,30.0f,30.0f);
+		glutSolidDodecahedron(); 
+	glPopMatrix();
+	
+	// middle
+	glPushMatrix();
+		glTranslatef(0,100,0);
+		glScalef(25.0f,25.0f,25.0f);
+		glutSolidDodecahedron(); 
+	glPopMatrix();
+	
+	// top
+	glPushMatrix();
+		glTranslatef(0,150,0);
+		glScalef(30.0f,30.0f,30.0f);
+		glutSolidIcosahedron(); 
+	glPopMatrix();
+	
 }
 
 void skybox(){
@@ -314,6 +385,10 @@ void display(void)
 		glScalef(0.5,0.5,0.5);
 		building();
 	glPopMatrix();
+	
+	glPushMatrix();
+		snowman();
+	glPopMatrix();
 
 	glFlush();
 }
@@ -351,6 +426,7 @@ int main(int argc, char** argv)
    initialise();
    glutDisplayFunc(display); 
    glutSpecialFunc(special);
+   glutTimerFunc(50, animationTimer, 0);
  
    glutMainLoop();
    return 0;

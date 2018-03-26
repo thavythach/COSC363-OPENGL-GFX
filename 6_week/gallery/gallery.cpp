@@ -8,6 +8,7 @@
 #include <iostream>
 #include <GL/freeglut.h>
 #include <cmath>
+#include "loadBMP.h"
 #include "loadTGA.h"
 #include <vector>
 using namespace std;
@@ -35,6 +36,16 @@ float wMoleculeZ0 = -4;
 float wMoleculeZ1 = -6;
 float wMoleculeZ2 = -2;
 float wMoleculeZ3 = 0;
+
+float vaseAngle = 0.0;
+const int N = 50;  // Total number of vertices on the base curve
+float vx[N] = {0, 8, 8, 7.5, 6.7, 5, 5.5, 4, 4, 5, 5.6, 6.1, 6.8, 7.1, 7.5, 8, 8.4, 8.7, 9, 9.3, 
+	          9.8, 10, 10.2, 10.4, 10.6, 10.9, 11, 11.1, 11.2, 11.3, 11.4, 11.3, 11.2, 11.1, 11, 10.5, 9.5, 8.2, 7, 6.2,
+			  6, 6.2, 6.8, 7.6, 8.5, 7, 6.1, 5.3, 4.7, 4.5};
+float vy[N] = {0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+	           19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38,
+			   39, 40, 41, 42, 43, 43, 42, 41, 40, 39};
+float vz[N] = {0};
 
 GLuint texId[6];
 
@@ -88,9 +99,21 @@ void animationTimer(int value){
 	wMoleculeZ2 += 0.2;
 	wMoleculeZ3 += 0.2;
 	
-	
 	glutPostRedisplay();
 	glutTimerFunc(50, animationTimer, 0);
+}
+
+// adapted from vase.cpp, new version for reverse vectors is given below
+void normal(float x1, float y1, float z1, 
+            float x2, float y2, float z2,
+		      float x3, float y3, float z3 )
+{
+	  float nx, ny, nz;
+	  nx = y1*(z2-z3)+ y2*(z3-z1)+ y3*(z1-z2);
+	  ny = z1*(x2-x3)+ z2*(x3-x1)+ z3*(x1-x2);
+	  nz = x1*(y2-y3)+ x2*(y3-y1)+ x3*(y1-y2);
+
+      glNormal3f(-nx, -ny, -nz);
 }
 
 void loadGLTextures()				// Load bitmaps And Convert To Textures
@@ -106,20 +129,29 @@ void loadGLTextures()				// Load bitmaps And Convert To Textures
     tgaTextures.push_back("alpha-island_ft.tga");
     tgaTextures.push_back("alpha-island_up.tga");
     tgaTextures.push_back("alpha-island_dn.tga");
+    //tgaTextures.push_back("VaseTexture.bmp");
     
-	glGenTextures(6, texId); 		// Create texture ids
+	glGenTextures(7, texId); 		// Create texture ids
 	
 	// Robust way to load and bind textures
 	for (int i=0; i<tgaTextures.size(); i++){
 		glBindTexture(GL_TEXTURE_2D, texId[i]);
-		loadTGA(tgaTextures[i]);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);	
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);	
+		if (i <= 5){
+			loadTGA(tgaTextures[i]);
+			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);	
+			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		}
+		if (i == 6){
+			//loadBMP(tgaTextures[i]);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	//Set texture parameters
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);	
+		}
 	}
 
 	glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
+	//glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 }
 
 //========================================================================================
@@ -484,8 +516,6 @@ void firelight(){
 	
 }
 
-
-
 void water(){
 	
 	glScalef(20,20,20);
@@ -535,6 +565,37 @@ void water(){
 		glutSolidCube(1.0);
 	glPopMatrix();
 	
+}
+
+void vase(){
+	
+	float wx[N], wy[N], wz[N]; 
+	float angStep = 10*3.1415926/180.0;  
+
+	glColor4f (lightVal, 0.75, 0.5, 1.0);
+	glRotatef(vaseAngle,0,1,0);
+	glPushMatrix();
+		for (int j=0; j< 36; j++){
+			glBegin(GL_TRIANGLE_STRIP);
+				for (int i=0; i<N; i++){
+					wx[i] = (vx[i]*cos(angStep)) + (vz[i]*sin(angStep));
+					wy[i] = vy[i];
+					wz[i] = (-vx[i]*sin(angStep)) + (vz[i]*cos(angStep));
+					
+					
+					if(i > 0) normal(wx[i-1], wy[i-1], wz[i-1],vx[i-1], vy[i-1], vz[i-1], vx[i], vy[i], vz[i] );
+					glTexCoord2f(j/36.0, i/(float)N); glVertex3f(vx[i], vy[i], vz[i]);
+					 
+					if(i > 0) normal( wx[i-1], wy[i-1], wz[i-1],vx[i], vy[i], vz[i], wx[i], wy[i], wz[i] );
+					glTexCoord2f(j/36.0, i/(float)N); glVertex3f(wx[i], wy[i], wz[i]); 
+					
+					vx[i] = wx[i];
+					vy[i] = wy[i];
+					vz[i] = wz[i];
+				}
+			glEnd();
+		}
+	glPopMatrix();
 }
 
 //---------------------------------------------------------------------
@@ -601,6 +662,11 @@ void display(void)
 	glPushMatrix();
 		glTranslatef(-500,25,-500);
 		water();
+	glPopMatrix();
+	
+	glPopMatrix();
+		glTranslatef(-500,25,-750);
+		vase();
 	glPopMatrix();
 		
 	glFlush();

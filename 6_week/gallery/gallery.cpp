@@ -28,10 +28,19 @@ float theta = 0;
 float shWalk = -390;
 float shHead = 3;
 
+float lightVal = 1.0f;
+int lTick = 0;
+
+float wMoleculeZ0 = -4;
+float wMoleculeZ1 = -6;
+float wMoleculeZ2 = -2;
+float wMoleculeZ3 = 0;
+
 GLuint texId[6];
 
 void animationTimer(int value){
 	
+	// snowman
 	if (rSnowman <= 0.0f) sTick = 1;
 	else if (rSnowman >= 1.0f)sTick = 0;
 	
@@ -45,6 +54,7 @@ void animationTimer(int value){
 		bSnowman += 0.01f;
 	}
 	
+	// sheep
 	if (shTick == 0){
 		theta ++;
 		shWalk -= 10;
@@ -56,6 +66,28 @@ void animationTimer(int value){
 		shHead = 3;
 		if (theta == -15) shTick = 0;
 	}
+	
+	if (lightVal <= 0.0f) lTick = 1;
+	else if (lightVal >= 1.0f) lTick = 0;
+	
+	if (lTick == 0){
+		lightVal -= 0.01f;
+	} else {
+		lightVal += 0.01f;
+	}
+	
+	// water molecules
+	int wMax = 5;
+	if (wMoleculeZ0 > wMax) wMoleculeZ0 = -4;
+	else if (wMoleculeZ1 > wMax) wMoleculeZ1 = -6;
+	else if (wMoleculeZ2 > wMax) wMoleculeZ2 = -2;
+	else if (wMoleculeZ3 > wMax) wMoleculeZ3 = 0;
+	
+	wMoleculeZ0 += 0.2;
+	wMoleculeZ1 += 0.2;
+	wMoleculeZ2 += 0.2;
+	wMoleculeZ3 += 0.2;
+	
 	
 	glutPostRedisplay();
 	glutTimerFunc(50, animationTimer, 0);
@@ -365,8 +397,7 @@ void skybox(){
 	glEnd();
 }
 
-void sheep()
-{
+void sheep(){
 	glScalef(15.0f,15.0f,15.0f);
 	
 	glColor3f(0., 0., 1.);		// sheep head
@@ -426,6 +457,86 @@ void sheep()
 	
 }
 
+void firelight(){
+	
+	glScalef(20.0f,20.0f,20.0f);
+	
+	for (int i=0; i < 5; i++){
+		// base
+		glColor3f(0.0f,0.0f,0.0f);
+		glPushMatrix();
+			glTranslatef(0,i*3,0);
+			glRotatef(-45,1,0,0);
+			glScalef(1, 2.4, 0.5);
+			glutSolidCube(1.0);
+		glPopMatrix();
+		
+		// light	
+		glColor3f(lightVal, 0.0f, 0.0f);
+		
+		glPushMatrix();
+			glTranslatef(0,1+(i*3),-1);
+			glRotatef(-45,1,0,0);
+			glScalef(1.0f, 0.4f, 0.2f);
+			glutSolidCube(1.0);
+		glPopMatrix();
+	}
+	
+}
+
+
+
+void water(){
+	
+	glScalef(20,20,20);
+	
+	// water lake base
+	glColor3f(0,0.4f,1.0f);
+	glPushMatrix();
+		glTranslatef(-0.5,0,0);
+		glRotatef(90,0,1,0);
+		glScalef(15,0.2f,5.0f);
+		glutSolidCube(1.0);
+	glPopMatrix();
+	
+	// water molecule 0
+	glColor3f(0,0.1f,1.0f);
+	glPushMatrix();
+		glTranslatef(-2,0.2,wMoleculeZ0);
+		glRotatef(90,0,1,0);
+		glScalef(1,0.1,0.7);
+		glutSolidCube(1.0);
+	glPopMatrix();
+	
+	// water molecule 1
+	glColor3f(0,0.1f,1.0f);
+	glPushMatrix();
+		glTranslatef(-1,0.2,wMoleculeZ1);
+		glRotatef(90,0,1,0);
+		glScalef(1,0.1,0.7);
+		glutSolidCube(1.0);
+	glPopMatrix();
+	
+	// water molecule 2
+	glColor3f(0,0.1f,1.0f);
+	glPushMatrix();
+		glTranslatef(0,0.2,wMoleculeZ2);
+		glRotatef(90,0,1,0);
+		glScalef(1,0.1,0.7);
+		glutSolidCube(1.0);
+	glPopMatrix();
+	
+	// water molecule 3
+	glColor3f(0,0.1f,1.0f);
+	glPushMatrix();
+		glTranslatef(1,0.2,wMoleculeZ3);
+		glRotatef(90,0,1,0);
+		glScalef(1,0.1,0.7);
+		glutSolidCube(1.0);
+	glPopMatrix();
+	
+}
+
 //---------------------------------------------------------------------
 void initialise(void) 
 {
@@ -450,7 +561,7 @@ void display(void)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	
-	gluLookAt (xeye, 30, zeye, xlook, 30, zlook, 0, 1, 0);  //camera rotation
+	gluLookAt (xeye, 100, zeye, xlook, 100, zlook, 0, 1, 0);  //camera rotation
 
 	glPushMatrix();
 		skybox();
@@ -474,7 +585,24 @@ void display(void)
 		glRotatef(90.0f,0,1,0);
 		sheep();
 	glPopMatrix();
-
+	
+	glPushMatrix();
+		glTranslatef(-203,25,130);
+		glRotatef(90,0,1,0);
+		firelight();
+	glPopMatrix();
+	
+	glPushMatrix();
+		glTranslatef(-203,25,-220);
+		glRotatef(90,0,1,0);
+		firelight();
+	glPopMatrix();
+	
+	glPushMatrix();
+		glTranslatef(-500,25,-500);
+		water();
+	glPopMatrix();
+		
 	glFlush();
 }
 

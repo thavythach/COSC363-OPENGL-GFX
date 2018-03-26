@@ -74,8 +74,10 @@ void initialise(void)
 	glEnable(GL_COLOR_MATERIAL);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, white);
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 100.0);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glClearColor (1.0, 1.0, 1.0, 0.0);
+    
+    loadTexture();
 
     glMatrixMode (GL_PROJECTION);
     glLoadIdentity ();
@@ -92,16 +94,44 @@ void normal(float x1, float y1, float z1,
 	  ny = z1*(x2-x3)+ z2*(x3-x1)+ z3*(x1-x2);
 	  nz = x1*(y2-y3)+ x2*(y3-y1)+ x3*(y1-y2);
 
-      glNormal3f(nx, ny, nz);
+      glNormal3f(-nx, -ny, -nz);
+}
+
+void vase(){
+	
+	float wx[N], wy[N], wz[N]; 
+	float angStep = 10*3.1415926/180.0;  //Rotate in 10 deg steps (converted to radians)
+
+	glColor4f (1.0, 0.75, 0.5, 1.0);
+	glPushMatrix();
+		for (int j=0; j< 36; j++){
+			glBegin(GL_TRIANGLE_STRIP);
+				for (int i=0; i<N; i++){
+					wx[i] = (vx[i]*cos(angStep)) + (vz[i]*sin(angStep));
+					wy[i] = vy[i];
+					wz[i] = (-vx[i]*sin(angStep)) + (vz[i]*cos(angStep));
+					
+					
+					if(i > 0) normal(wx[i-1], wy[i-1], wz[i-1],vx[i-1], vy[i-1], vz[i-1], vx[i], vy[i], vz[i] );
+					glTexCoord2f(j/36.0, i/(float)N); glVertex3f(vx[i], vy[i], vz[i]);
+					 
+					if(i > 0) normal( wx[i-1], wy[i-1], wz[i-1],vx[i], vy[i], vz[i], wx[i], wy[i], wz[i] );
+					glTexCoord2f(j/36.0, i/(float)N); glVertex3f(wx[i], wy[i], wz[i]); 
+					
+					vx[i] = wx[i];
+					vy[i] = wy[i];
+					vz[i] = wz[i];
+				}
+			glEnd();
+		}
+	glPopMatrix();
 }
 
 //-------------------------------------------------------------------
 void display(void)
 {
-	float wx[N], wy[N], wz[N]; 
-	float angStep = 10.0*3.1415926/180.0;  //Rotate in 10 deg steps (converted to radians)
 	float lgt_pos[]={5.0f, 50.0f, 100.0f, 1.0f};  //light0 position (above the origin) 
-
+	
 	glClear (GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -112,10 +142,15 @@ void display(void)
 	glLightfv(GL_LIGHT0, GL_POSITION, lgt_pos);   //light position
 
 	floor();
+	
+	glEnable(GL_TEXTURE_2D);
 
-	glColor4f (0.0, 0.0, 1.0, 1.0);    //Temporary
-
-	//  Include code for drawing the surface of revolution here.
+	glPushMatrix();
+		vase();
+	glPopMatrix();
+	
+	
+	
 
 	glFlush();
 }

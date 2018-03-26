@@ -20,8 +20,8 @@ void loadTexture()
 {
 	glGenTextures(2, txId);   //Get 2 texture IDs 
 	glBindTexture(GL_TEXTURE_2D, txId[0]);  //Use this texture name for the following OpenGL texture
-	//loadBMP("brycebanana.bmp");
-	loadBMP("Earth.bmp");
+	loadBMP("brycebanana.bmp");
+	//loadBMP("Earth.bmp");
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	// Linear Filtering
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	

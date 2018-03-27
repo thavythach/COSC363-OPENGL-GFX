@@ -47,7 +47,7 @@ float vy[N] = {0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 
 			   39, 40, 41, 42, 43, 43, 42, 41, 40, 39};
 float vz[N] = {0};
 
-GLuint texId[6];
+GLuint texId[9];
 
 void animationTimer(int value){
 	
@@ -123,15 +123,17 @@ void loadGLTextures()				// Load bitmaps And Convert To Textures
  
     // Initialize vector with strings using push_back 
     // command
-    tgaTextures.push_back("alpha-island_lf.tga");
-    tgaTextures.push_back("alpha-island_bk.tga");
-    tgaTextures.push_back("alpha-island_rt.tga");
-    tgaTextures.push_back("alpha-island_ft.tga");
-    tgaTextures.push_back("alpha-island_up.tga");
-    tgaTextures.push_back("alpha-island_dn.tga");
-    //tgaTextures.push_back("VaseTexture.bmp");
-    
-	glGenTextures(7, texId); 		// Create texture ids
+	tgaTextures.push_back("alpha-island_lf.tga");
+	tgaTextures.push_back("alpha-island_bk.tga");
+	tgaTextures.push_back("alpha-island_rt.tga");
+	tgaTextures.push_back("alpha-island_ft.tga");
+	tgaTextures.push_back("alpha-island_up.tga");
+	tgaTextures.push_back("alpha-island_dn.tga");
+	tgaTextures.push_back("brick_tx1.tga");
+	tgaTextures.push_back("brick_tx2.tga");
+	tgaTextures.push_back("brick_tx3.tga");
+
+	glGenTextures(9, texId); 		// Create texture ids
 	
 	// Robust way to load and bind textures
 	for (int i=0; i<tgaTextures.size(); i++){
@@ -143,51 +145,46 @@ void loadGLTextures()				// Load bitmaps And Convert To Textures
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		}
-		if (i == 6){
-			//loadBMP(tgaTextures[i]);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	//Set texture parameters
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);	
+		if (i < 9){
+			loadTGA(tgaTextures[i]);
+			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);	//Set texture parameters
+			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);	
 		}
 	}
 
 	glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
-	//glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 }
 
 //========================================================================================
 
 void halfPyramid(){
 	
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texId[6]);
+	
 	glBegin(GL_TRIANGLES);
 		// Right
-		glColor3f(178.0f,0.0f,0.0f);     // Red
-		glVertex3f(0.0f, 1000.0f, 0.0f);
-		glColor3f(0.1f,0.1f,0.1f);     // Red
-		glVertex3f(1000.0f, -1000.0f, 1000.0f);
-		glColor3f(178.0f,0.0f,0.0f);     // Red
-		glVertex3f(1000.0f, -1000.0f, -1000.0f);
+		glTexCoord2f(1.0, 0.0); glVertex3f(0.0f, 1000.0f, 0.0f);
+		glTexCoord2f(1.0, 1.0); glVertex3f(1000.0f, -1000.0f, 1000.0f);
+		glTexCoord2f(0.0, 1.0); glVertex3f(1000.0f, -1000.0f, -1000.0f);
 	glEnd();  
 	
 	glBegin(GL_TRIANGLES);
 
 		// Back
-		glColor3f(178.0f,0.0f,0.0f);     // Red
-		glVertex3f(0.0f, 1000.0f, 0.0f);
-		glColor3f(0.1f,0.1f,0.1f);     // Red
-		glVertex3f(1000.0f, -1000.0f, -1000.0f);
-		glColor3f(178.0f,0.0f,0.0f);     // Red
-		glVertex3f(-1000.0f, -1000.0f, -1000.0f);
+		glTexCoord2f(1.0, 0.0);	glVertex3f(0.0f, 1000.0f, 0.0f);
+		glTexCoord2f(1.0, 1.0); glVertex3f(1000.0f, -1000.0f, -1000.0f);
+		glTexCoord2f(0.0, 1.0); glVertex3f(-1000.0f, -1000.0f, -1000.0f);
 	glEnd();  
 
 	glBegin(GL_TRIANGLES);
 		// Left
-		glColor3f(178.0f,0.0f,0.0f);     // Red
-		glVertex3f( 0.0f, 1000.0f, 0.0f);
-		glColor3f(0.1f,0.1f,0.1f);     // Red
-		glVertex3f(-1000.0f,-1000.0f,-1000.0f);
-		glColor3f(178.0f,0.0f,0.0f);     // Red
-		glVertex3f(-1000.0f,-1000.0f, 1000.0f);
+	glTexCoord2f(1.0, 0.0);	glVertex3f( 0.0f, 1000.0f, 0.0f);
+	glTexCoord2f(1.0, 1.0);	glVertex3f(-1000.0f,-1000.0f,-1000.0f);
+	glTexCoord2f(0.0, 1.0);	glVertex3f(-1000.0f,-1000.0f, 1000.0f);
 	glEnd();
+	
+	glDisable(GL_TEXTURE_2D);
 }
 
 void building(){
@@ -207,36 +204,38 @@ void building(){
 	glPushMatrix();
 		glTranslatef(0,1350,0);
 		
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, texId[7]);
 		// back bottom left
 		glBegin(GL_TRIANGLES);
-			glColor4f(0.5, 0.5, 0.5, 1.0); glVertex3f( 0.0f, 1000.0f, otherSide);
-			glColor4f(1.0, 0.0, 0.0, 1.0); glVertex3f(-1000.0f, -1000.0f, 1000.0f);
-			glColor4f(0.0, 0.0, 1.0, 1.0); glVertex3f(-1000.0f, -1000.0f, -1000.0f+otherSide);
+			glTexCoord2f(1.0, 0.0); glVertex3f( 0.0f, 1000.0f, otherSide);
+			glTexCoord2f(1.0, 1.0);  glVertex3f(-1000.0f, -1000.0f, 1000.0f);
+			glTexCoord2f(0.0, 1.0);  glVertex3f(-1000.0f, -1000.0f, -1000.0f+otherSide);
 		glEnd();
-		
 		
 		// back top right
 		glBegin(GL_TRIANGLES);
-			glColor4f(0.5, 0.5, 0.5, 1.0); glVertex3f( 0.0f, 1000.0f, 0.0f);
-			glColor4f(1.0, 0.0, 0.0, 1.0); glVertex3f(-1000.0f, -1000.0f, 1000.0f);
-			glColor4f(0.0, 0.0, 1.0, 1.0); glVertex3f(0.0f, 1000.0f, otherSide);
+			glTexCoord2f(1.0, 0.0); glVertex3f( 0.0f, 1000.0f, 0.0f);
+			glTexCoord2f(1.0, 1.0);  glVertex3f(-1000.0f, -1000.0f, 1000.0f);
+			glTexCoord2f(0.0, 1.0); glVertex3f(0.0f, 1000.0f, otherSide);
 		glEnd();
 		
-		
+		glBindTexture(GL_TEXTURE_2D, texId[8]);
 		// front bottom left
 		glBegin(GL_TRIANGLES);
-			glColor4f(0.5, 0.5, 0.5, 1.0); glVertex3f( 0.0, 1000.0f, otherSide);
-			glColor4f(1.0, 0.0, 0.0, 1.0); glVertex3f(1000.0f, -1000.0f, 1000.0f);
-			glColor4f(0.0, 0.0, 1.0, 1.0); glVertex3f(1000.0f, -1000.0f, -1000.0f+otherSide);
+			glTexCoord2f(1.0, 0.0); glVertex3f( 0.0, 1000.0f, otherSide);
+			glTexCoord2f(1.0, 1.0); glVertex3f(1000.0f, -1000.0f, 1000.0f);
+			glTexCoord2f(0.0, 1.0); glVertex3f(1000.0f, -1000.0f, -1000.0f+otherSide);
 		glEnd();
 		
 		// front top right
 		glBegin(GL_TRIANGLES);
-			glColor4f(0.5, 0.5, 0.5, 1.0); glVertex3f( 0.0f, 1000.0f, 0.0f);
-			glColor4f(1.0, 0.0, 0.0, 1.0); glVertex3f(1000.0f, -1000.0f, 1000.0f);
-			glColor4f(0.0, 0.0, 1.0, 1.0); glVertex3f(0.0f, 1000.0f, otherSide);
+			glTexCoord2f(1.0, 0.0); glVertex3f( 0.0f, 1000.0f, 0.0f);
+			glTexCoord2f(1.0, 1.0); glVertex3f(1000.0f, -1000.0f, 1000.0f);
+			glTexCoord2f(0.0, 1.0); glVertex3f(0.0f, 1000.0f, otherSide);
 		glEnd();
 		
+		glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
 	
 	glPushMatrix();
@@ -309,6 +308,7 @@ void building(){
 		glutSolidCube(1000.0);
 	glPopMatrix();
 	
+	
 	// both houses, back
 	glPushMatrix();
 		glTranslatef(-1100,0,4800);
@@ -316,7 +316,6 @@ void building(){
 		glScalef(10.0f,0.8f, 0.1f);
 		glutSolidCube(1000.0);
 	glPopMatrix();
-	
 	
 	
 }
@@ -622,7 +621,7 @@ void display(void)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	
-	gluLookAt (xeye, 100, zeye, xlook, 100, zlook, 0, 1, 0);  //camera rotation
+	gluLookAt (xeye, 300, zeye, xlook, 300, zlook, 0, 1, 0);  //camera rotation
 
 	glPushMatrix();
 		skybox();

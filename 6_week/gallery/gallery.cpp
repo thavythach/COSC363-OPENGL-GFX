@@ -244,7 +244,7 @@ void building(){
 		halfPyramid();
 	glPopMatrix();
 	
-	glColor3f(0.1f, 0.35f, 0.05f);
+	glColor3f(0.5,0.5, 0.5);
 	// right house, right
 	glPushMatrix();
 		glTranslatef(0,0,-1000);
@@ -300,6 +300,8 @@ void building(){
 		glutSolidCube(1000.0);
 	glPopMatrix();
 	
+	glEnable(GL_LIGHT1);
+	glEnable(GL_LIGHTING);
 	// left house, front
 	glPushMatrix();
 		glTranslatef(1100,0,-1500+otherSide);
@@ -307,6 +309,8 @@ void building(){
 		glScalef(5.0f,0.9f, 0.1f);
 		glutSolidCube(1000.0);
 	glPopMatrix();
+	glDisable(GL_LIGHT2);
+	glDisable(GL_LIGHTING);
 	
 	
 	// both houses, back
@@ -493,6 +497,12 @@ void firelight(){
 	glScalef(20.0f,20.0f,20.0f);
 	
 	for (int i=0; i < 5; i++){
+		
+		if (i==3){
+			glEnable(GL_LIGHTING);
+			glEnable(GL_LIGHT1);
+			glDisable(GL_LIGHT0);	
+		}
 		// base
 		glColor3f(0.0f,0.0f,0.0f);
 		glPushMatrix();
@@ -503,7 +513,7 @@ void firelight(){
 		glPopMatrix();
 		
 		// light	
-		glColor3f(lightVal, 0.0f, 0.0f);
+		glColor3f(lightVal, 0.5f, 0.0f);
 		
 		glPushMatrix();
 			glTranslatef(0,1+(i*3),-1);
@@ -511,6 +521,11 @@ void firelight(){
 			glScalef(1.0f, 0.4f, 0.2f);
 			glutSolidCube(1.0);
 		glPopMatrix();
+		
+		if (i==3){
+			glDisable(GL_LIGHT1);
+			glDisable(GL_LIGHTING);
+		}
 	}
 	
 }
@@ -567,9 +582,11 @@ void water(){
 }
 
 void vase(){
-	
+	//float white[4] = {1., 1., 1., 1.};
+	//float black[4] = {0};
 	float wx[N], wy[N], wz[N]; 
 	float angStep = 10*3.1415926/180.0;  
+	//glMaterialfv(GL_FRONT, GL_SPECULAR, black);  // suppress specular reflections
 
 	glColor4f (lightVal, 0.75, 0.5, 1.0);
 	glRotatef(vaseAngle,0,1,0);
@@ -595,6 +612,9 @@ void vase(){
 			glEnd();
 		}
 	glPopMatrix();
+	
+	//glMaterialfv(GL_FRONT, GL_SPECULAR, white);  // suppress specular reflections
+
 }
 
 //---------------------------------------------------------------------
@@ -606,6 +626,28 @@ void initialise(void)
     glEnable(GL_TEXTURE_2D);
 	glEnable(GL_NORMALIZE);
 	glClearColor (0.0, 0.0, 0.0, 0.0);
+	
+	// light 0
+	float ambient[4] = {0.2, 0.2, 0.2, 1.0};
+	float white[4]   = {1.0, 1.0, 1.0, 1.0};
+	float mat_col[4] = {1.0, 1.0, 0.0, 1.0};     //Yellow
+	
+	glEnable(GL_LIGHT0);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, white);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, white);
+	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, mat_col);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, white);
+	glMaterialf(GL_FRONT, GL_SHININESS, 50); 
+	
+	glEnable(GL_LIGHT1);
+	glLightfv(GL_LIGHT1, GL_AMBIENT, ambient);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, white);
+	glLightfv(GL_LIGHT1, GL_SPECULAR, white);
+	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, mat_col);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, white);
+	glMaterialf(GL_FRONT, GL_SHININESS, 125); 
+	
 
     glMatrixMode (GL_PROJECTION);
     glLoadIdentity ();
@@ -621,7 +663,15 @@ void display(void)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	
-	gluLookAt (xeye, 300, zeye, xlook, 300, zlook, 0, 1, 0);  //camera rotation
+	gluLookAt (xeye, 100, zeye, xlook, 100, zlook, 0, 1, 0);  //camera rotation
+	
+   float lgt_pos1[] = {-390, 30, 600.0f, 1.0f};  //light0 position (directly above the origin)
+   glLightfv(GL_LIGHT0, GL_POSITION, lgt_pos1);   //light position
+   
+  float lgt_pos2[] = {-210, 100, -220, 1.0f};  //light0 position (directly above the origin)
+   glLightfv(GL_LIGHT0, GL_POSITION, lgt_pos1);   //light position
+
+
 
 	glPushMatrix();
 		skybox();
@@ -640,11 +690,16 @@ void display(void)
 		snowman();
 	glPopMatrix();
 	
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glDisable(GL_LIGHT1);
 	glPushMatrix();
 		glTranslatef(shWalk,0,600);
 		glRotatef(90.0f,0,1,0);
 		sheep();
 	glPopMatrix();
+	glDisable(GL_LIGHT0);
+	glDisable(GL_LIGHTING);
 	
 	glPushMatrix();
 		glTranslatef(-203,25,130);
@@ -652,11 +707,13 @@ void display(void)
 		firelight();
 	glPopMatrix();
 	
+	
 	glPushMatrix();
 		glTranslatef(-203,25,-220);
 		glRotatef(90,0,1,0);
 		firelight();
 	glPopMatrix();
+	
 	
 	glPushMatrix();
 		glTranslatef(-500,25,-500);

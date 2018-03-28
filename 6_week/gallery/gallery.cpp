@@ -8,7 +8,6 @@
 #include <iostream>
 #include <GL/freeglut.h>
 #include <cmath>
-#include "loadBMP.h"
 #include "loadTGA.h"
 #include <vector>
 using namespace std;
@@ -617,6 +616,54 @@ void vase(){
 
 }
 
+void gallery(){
+	glDisable(GL_TEXTURE_2D);
+	glPushMatrix();
+		glScalef(0.5,0.5,0.5);
+		building();
+	glPopMatrix();
+	
+	glPushMatrix();
+		glTranslatef(-500,0,0);
+		snowman();
+	glPopMatrix();
+	
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glDisable(GL_LIGHT1);
+	glPushMatrix();
+		glTranslatef(shWalk,0,600);
+		glRotatef(90.0f,0,1,0);
+		sheep();
+	glPopMatrix();
+	glDisable(GL_LIGHT0);
+	glDisable(GL_LIGHTING);
+	
+	glPushMatrix();
+		glTranslatef(-203,25,130);
+		glRotatef(90,0,1,0);
+		firelight();
+	glPopMatrix();
+	
+	
+	glPushMatrix();
+		glTranslatef(-203,25,-220);
+		glRotatef(90,0,1,0);
+		firelight();
+	glPopMatrix();
+	
+	
+	glPushMatrix();
+		glTranslatef(-500,25,-500);
+		water();
+	glPopMatrix();
+	
+	glPopMatrix();
+		glTranslatef(-500,25,-750);
+		vase();
+	glPopMatrix();	
+}
+
 //---------------------------------------------------------------------
 void initialise(void) 
 {
@@ -668,65 +715,22 @@ void display(void)
    float lgt_pos1[] = {-390, 30, 600.0f, 1.0f};  //light0 position (directly above the origin)
    glLightfv(GL_LIGHT0, GL_POSITION, lgt_pos1);   //light position
    
-  float lgt_pos2[] = {-210, 100, -220, 1.0f};  //light0 position (directly above the origin)
+   float lgt_pos2[] = {-210, 100, -220, 1.0f};  //light1 position (directly above the origin)
    glLightfv(GL_LIGHT0, GL_POSITION, lgt_pos1);   //light position
-
 
 
 	glPushMatrix();
 		skybox();
 	glPopMatrix();
 	
-	
-	glDisable(GL_TEXTURE_2D);
-
 	glPushMatrix();
-		glScalef(0.5,0.5,0.5);
-		building();
+		gallery();
 	glPopMatrix();
 	
-	glPushMatrix();
-		glTranslatef(-500,0,0);
-		snowman();
-	glPopMatrix();
-	
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-	glDisable(GL_LIGHT1);
-	glPushMatrix();
-		glTranslatef(shWalk,0,600);
-		glRotatef(90.0f,0,1,0);
-		sheep();
-	glPopMatrix();
-	glDisable(GL_LIGHT0);
-	glDisable(GL_LIGHTING);
-	
-	glPushMatrix();
-		glTranslatef(-203,25,130);
-		glRotatef(90,0,1,0);
-		firelight();
-	glPopMatrix();
-	
-	
-	glPushMatrix();
-		glTranslatef(-203,25,-220);
-		glRotatef(90,0,1,0);
-		firelight();
-	glPopMatrix();
-	
-	
-	glPushMatrix();
-		glTranslatef(-500,25,-500);
-		water();
-	glPopMatrix();
-	
-	glPopMatrix();
-		glTranslatef(-500,25,-750);
-		vase();
-	glPopMatrix();
-		
 	glFlush();
+	
 }
+
 
 //--------------------------------------------------------------
  void special(int key, int x, int y)

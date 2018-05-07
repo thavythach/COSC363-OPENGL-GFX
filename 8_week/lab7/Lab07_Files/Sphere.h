@@ -37,7 +37,7 @@ public:
 
 	float intersect(glm::vec3 posn, glm::vec3 dir);
 
-	glm::vec3 Sphere::normal(glm::vec3 p);
+	glm::vec3 normal(glm::vec3 p);
 
 };
 

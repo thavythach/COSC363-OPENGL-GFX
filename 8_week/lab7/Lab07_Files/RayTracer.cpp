@@ -17,7 +17,7 @@ using namespace std;
 const float WIDTH = 20.0;  
 const float HEIGHT = 20.0;
 const float EDIST = 40.0;
-const int NUMDIV = 50;
+const int NUMDIV = 500;
 const int MAX_STEPS = 5;
 const float XMIN = -WIDTH * 0.5;
 const float XMAX =  WIDTH * 0.5;
@@ -36,14 +36,34 @@ glm::vec3 trace(Ray ray, int step)
 	glm::vec3 backgroundCol(0);
 	glm::vec3 light(10, 40, -3);
 	glm::vec3 ambientCol(0.2);   //Ambient color of light
+	
 
     ray.closestPt(sceneObjects);		//Compute the closest point of intersetion of objects with the ray
 
     if(ray.xindex == -1) return backgroundCol;      //If there is no intersection return background colour
 
     glm::vec3 materialCol = sceneObjects[ray.xindex]->getColor(); //else return object's colour
+    glm::vec3 normalVector = sceneObjects[ray.xindex]->normal(ray.xpt);
+    glm::vec3 lightVector = glm::normalize(light - ray.xpt);
+    float lDotn =glm::dot(lightVector, normalVector); 
 
-	return materialCol;
+    glm::vec3 reflVector = glm::reflect(-lightVector, normalVector);
+    float rDotv = glm::dot(reflVector, -ray.dir);
+
+    glm::vec3 oneVec(1,1,1); 
+    glm::vec3 zeroVec(0,0,0); 
+    float specularTerm = pow(rDotv, 10);
+
+    glm::vec3 specularRef = zeroVec;  
+    if(rDotv >= 0) {
+        specularRef = specularTerm * oneVec;  
+    }
+        
+    if(lDotn < 0) {
+        return((ambientCol * materialCol) + specularRef);
+    }
+   
+    return(((ambientCol * materialCol) + (lDotn*materialCol)) + specularRef);
 }
 
 //---The main display module -----------------------------------------------------------
@@ -103,10 +123,16 @@ void initialize()
     glClearColor(0, 0, 0, 1);
 
 	//-- Create a pointer to a sphere object
-//	Sphere *sphere1 = new Sphere(glm::vec3(-5.0, -5.0, -90.0), 15.0, glm::vec3(0, 0, 1));
+	Sphere *sphere1 = new Sphere(glm::vec3(-5.0, -5.0, -90.0), 15.0, glm::vec3(0, 0, 1));
+	Sphere *sphere2 = new Sphere(glm::vec3(7.0, 7.0, -90.0), 3.0, glm::vec3(1, 0, 0));
+	Sphere *sphere3 = new Sphere(glm::vec3(15.0, 15.0, -90.0), 5.0, glm::vec3(0, 1, 0));
+
 
 	//--Add the above to the list of scene objects.
-//	sceneObjects.push_back(sphere1); 
+	sceneObjects.push_back(sphere1); 
+	sceneObjects.push_back(sphere2);
+	sceneObjects.push_back(sphere3); 
+
 }
 
 

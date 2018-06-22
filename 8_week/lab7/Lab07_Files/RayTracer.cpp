@@ -12,6 +12,7 @@
 #include "SceneObject.h"
 #include "Ray.h"
 #include <GL/glut.h>
+#include "Plane.h"
 using namespace std;
 
 const float WIDTH = 20.0;  
@@ -27,7 +28,7 @@ const float YMAX =  HEIGHT * 0.5;
 vector<SceneObject*> sceneObjects;  //A global list containing pointers to objects in the scene
 
 
-//---The most important function in a ray tracer! ---------------------------------- 
+//---The most important function in a ray tracedr! ---------------------------------- 
 //   Computes the colour value obtained by tracing a ray and finding its 
 //     closest point of intersection with objects in the scene.
 //----------------------------------------------------------------------------------
@@ -37,7 +38,6 @@ glm::vec3 trace(Ray ray, int step)
 	glm::vec3 light(10, 40, -3);
 	glm::vec3 ambientCol(0.2);   //Ambient color of light
 	
-
     ray.closestPt(sceneObjects);		//Compute the closest point of intersetion of objects with the ray
 
     if(ray.xindex == -1) return backgroundCol;      //If there is no intersection return background colour
@@ -45,7 +45,7 @@ glm::vec3 trace(Ray ray, int step)
     glm::vec3 materialCol = sceneObjects[ray.xindex]->getColor(); //else return object's colour
     glm::vec3 normalVector = sceneObjects[ray.xindex]->normal(ray.xpt);
     glm::vec3 lightVector = glm::normalize(light - ray.xpt);
-    float lDotn =glm::dot(lightVector, normalVector); 
+    float lDotn = glm::dot(lightVector, normalVector); 
 
     glm::vec3 reflVector = glm::reflect(-lightVector, normalVector);
     float rDotv = glm::dot(reflVector, -ray.dir);
@@ -53,17 +53,39 @@ glm::vec3 trace(Ray ray, int step)
     glm::vec3 oneVec(1,1,1); 
     glm::vec3 zeroVec(0,0,0); 
     float specularTerm = pow(rDotv, 10);
+	//float ambientTerm = 0.2f; if we want to use 
+
+    // let's create some dank shadows
+    Ray shadow(ray.xpt, lightVector);
+	shadow.closestPt(sceneObjects);
+	float lightDist = glm::distance(shadow.pt, light);
+	
+	 glm::vec3 colorSum(0);
 
     glm::vec3 specularRef = zeroVec;  
     if(rDotv >= 0) {
         specularRef = specularTerm * oneVec;  
     }
-        
-    if(lDotn < 0) {
-        return((ambientCol * materialCol) + specularRef);
+    
+    if(lDotn == 0 || (shadow.xindex > -1 &&  (shadow.xdist < lightDist))) { //is in shadow
+        colorSum = ambientCol * materialCol;
     }
+    else if(lDotn < 0) { //not in shadow
+        colorSum = ((ambientCol * materialCol) + specularRef);
+    }
+    else {
+        colorSum = (ambientCol * materialCol) + (lDotn*materialCol) + specularRef;
+    }
+    
+    if(ray.xindex == 0 && step < MAX_STEPS)
+	{
+       glm::vec3 reflectedDir = glm::reflect(ray.dir, normalVector);
+       Ray reflectedRay(ray.xpt, reflectedDir);
+       glm::vec3 reflectedCol = trace(reflectedRay, step+1);  //Recursion!
+       colorSum = colorSum + (0.8f*reflectedCol);
+	}
    
-    return(((ambientCol * materialCol) + (lDotn*materialCol)) + specularRef);
+    return(colorSum);
 }
 
 //---The main display module -----------------------------------------------------------
@@ -124,15 +146,22 @@ void initialize()
 
 	//-- Create a pointer to a sphere object
 	Sphere *sphere1 = new Sphere(glm::vec3(-5.0, -5.0, -90.0), 15.0, glm::vec3(0, 0, 1));
-	Sphere *sphere2 = new Sphere(glm::vec3(7.0, 7.0, -90.0), 3.0, glm::vec3(1, 0, 0));
-	Sphere *sphere3 = new Sphere(glm::vec3(15.0, 15.0, -90.0), 5.0, glm::vec3(0, 1, 0));
+	Sphere *sphere2 = new Sphere(glm::vec3(10.0,7.0, -60.0), 5.0, glm::vec3(1, 0, 0));
+	Sphere *sphere3 = new Sphere(glm::vec3(6.0, -10.0, -50.0), 2.0, glm::vec3(0, 1, 0));
 
+	Plane *plane = new Plane (
+		glm::vec3(-20., -20, -40), // PT A
+		glm::vec3(20., -20, -40), // PT B
+		glm::vec3(20., -20, -200), // PT C
+		glm::vec3(-20., -20, -200), // PT D
+		glm::vec3(0.5, 0.5, 0) // COLOUR
+	);
 
 	//--Add the above to the list of scene objects.
 	sceneObjects.push_back(sphere1); 
 	sceneObjects.push_back(sphere2);
 	sceneObjects.push_back(sphere3); 
-
+	sceneObjects.push_back(plane);
 }
 
 
